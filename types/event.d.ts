@@ -436,5 +436,13 @@ export type OverlayHandlerFuncs = {
 };
 
 export type IOverlayHandler =
-    <T extends OverlayHandlerTypes>(msg: OverlayHandlerRequests[T]) =>
-    Promise<OverlayHandlerResponseTypes[T]>;
+  OverlayHandlerFuncs['subscribe'] &
+  OverlayHandlerFuncs['getCombatants'] &
+  OverlayHandlerFuncs['cactbotReloadOverlays'] &
+  OverlayHandlerFuncs['cactbotLoadUser'] &
+  OverlayHandlerFuncs['cactbotRequestPlayerUpdate'] &
+  OverlayHandlerFuncs['cactbotRequestState'] &
+  OverlayHandlerFuncs['cactbotSay'] &
+  OverlayHandlerFuncs['cactbotSaveData'] &
+  OverlayHandlerFuncs['cactbotLoadData'] &
+  OverlayHandlerFuncs['cactbotChooseDirectory'];

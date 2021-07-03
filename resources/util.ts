@@ -135,7 +135,7 @@ const watchCombatant: WatchCombatantFunc = (params, func) => {
         rej();
         return;
       }
-      void callOverlayHandler<'getCombatants'>(call).then((response) => {
+      void callOverlayHandler(call).then((response) => {
         if (entry.cancel) {
           rej();
           return;
