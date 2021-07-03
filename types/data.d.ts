@@ -37,3 +37,16 @@ export interface RaidbossData {
   CanFeint: () => boolean;
   CanAddle: () => boolean;
 }
+
+export interface OopsyData {
+  job: Job;
+  me: string;
+  role: Role;
+  party: PartyTracker;
+  inCombat: boolean;
+  ShortName: (x?: string) => string;
+  IsPlayerId: (x?: string) => boolean;
+
+  /** @deprecated Use parseFloat instead */
+  ParseLocaleFloat: (string: string) => number;
+}
