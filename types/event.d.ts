@@ -432,7 +432,7 @@ export type OverlayHandlerAnyResponse = OverlayHandlerResponses[OverlayHandlerTy
 
 export type OverlayHandlerFuncs = {
   [call in OverlayHandlerTypes]:
-      (msg: Parameters<OverlayHandlerAll[call]>[0]) => OverlayHandlerResponses[call];
+    (msg: Parameters<OverlayHandlerAll[call]>[0]) => OverlayHandlerResponses[call];
 };
 
 export type IOverlayHandler =

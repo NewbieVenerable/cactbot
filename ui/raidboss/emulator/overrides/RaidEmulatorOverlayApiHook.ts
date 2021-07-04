@@ -1,16 +1,15 @@
-import { setCallOverlayHandlerOverride } from '../../../../resources/overlay_plugin_api';
-import { IOverlayHandler, OverlayHandlerAll, OverlayHandlerResponses, OverlayHandlerResponseTypes, PluginCombatantState } from '../../../../types/event';
+import { setGetCombatantsOverride } from '../../../../resources/overlay_plugin_api';
+import { OverlayHandlerAll, OverlayHandlerResponses, OverlayHandlerResponseTypes, PluginCombatantState } from '../../../../types/event';
 import AnalyzedEncounter from '../data/AnalyzedEncounter';
 import LineEvent, { isLineEventSource } from '../data/network_log_converter/LineEvent';
 import { LineEvent0x03 } from '../data/network_log_converter/LineEvent0x03';
 import RaidEmulator from '../data/RaidEmulator';
 
 export default class RaidEmulatorOverlayApiHook {
-  originalCall: IOverlayHandler;
   currentLogTime: number;
   connected: boolean;
   constructor(private emulator: RaidEmulator) {
-    this.originalCall = setCallOverlayHandlerOverride(this.call.bind(this));
+    setGetCombatantsOverride(this._getCombatantsOverride.bind(this));
     this.currentLogTime = 0;
     this.connected = false;
 
@@ -26,13 +25,6 @@ export default class RaidEmulatorOverlayApiHook {
         this.currentLogTime = log.timestamp;
       });
     });
-  }
-
-  async call(msg: { [s: string]: unknown }): Promise<any> {
-    if (msg.call === 'getCombatants')
-      return await this._getCombatantsOverride(msg);
-
-    return await this.originalCall(msg);
   }
 
   _getCombatantsOverride(msg: Parameters<OverlayHandlerAll['getCombatants']>[0]):

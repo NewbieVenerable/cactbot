@@ -1,6 +1,6 @@
 // OverlayPlugin API setup
 
-import { EventMap, EventType, IOverlayHandler } from '../types/event';
+import { EventMap, EventType, IOverlayHandler, OverlayHandlerFuncs } from '../types/event';
 
 declare global {
   interface Window {
@@ -145,24 +145,20 @@ const callOverlayHandlerInternal: IOverlayHandler = (
   return p;
 };
 
-let callOverlayHandlerOverride: IOverlayHandler | undefined;
+let getCombatantsOverride: OverlayHandlerFuncs['getCombatants'] | undefined;
 
 export const callOverlayHandler: IOverlayHandler = (
     _msg: { [s: string]: unknown },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
   init();
-  if (callOverlayHandlerOverride) {
-    return callOverlayHandlerOverride(
-      _msg as Parameters<IOverlayHandler>[0],
-    ) as Promise<unknown>;
-  }
+  if (_msg.call === 'getCombatants' && getCombatantsOverride)
+    return getCombatantsOverride(_msg as Parameters<OverlayHandlerFuncs['getCombatants']>[0]);
   return callOverlayHandlerInternal(_msg as Parameters<IOverlayHandler>[0]);
 };
 
-export const setCallOverlayHandlerOverride = (override?: IOverlayHandler): IOverlayHandler => {
-  callOverlayHandlerOverride = override;
-  return callOverlayHandlerInternal;
+export const setGetCombatantsOverride = (override?: OverlayHandlerFuncs['getCombatants']): void => {
+  getCombatantsOverride = override;
 };
 
 export const init = (): void => {
