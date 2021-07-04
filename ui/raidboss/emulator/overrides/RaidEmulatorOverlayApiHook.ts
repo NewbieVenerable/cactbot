@@ -1,4 +1,4 @@
-import { setGetCombatantsOverride } from '../../../../resources/overlay_plugin_api';
+import { setOverlayHandlerOverride } from '../../../../resources/overlay_plugin_api';
 import { OverlayHandlerAll, OverlayHandlerResponses, OverlayHandlerResponseTypes, PluginCombatantState } from '../../../../types/event';
 import AnalyzedEncounter from '../data/AnalyzedEncounter';
 import LineEvent, { isLineEventSource } from '../data/network_log_converter/LineEvent';
@@ -9,7 +9,7 @@ export default class RaidEmulatorOverlayApiHook {
   currentLogTime: number;
   connected: boolean;
   constructor(private emulator: RaidEmulator) {
-    setGetCombatantsOverride(this._getCombatantsOverride.bind(this));
+    setOverlayHandlerOverride('getCombatants', this._getCombatantsOverride.bind(this));
     this.currentLogTime = 0;
     this.connected = false;
 

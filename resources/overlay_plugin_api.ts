@@ -145,20 +145,42 @@ const callOverlayHandlerInternal: IOverlayHandler = (
   return p;
 };
 
-let getCombatantsOverride: OverlayHandlerFuncs['getCombatants'] | undefined;
+type OverrideMap = {
+  subscribe?: OverlayHandlerFuncs['subscribe'];
+  getCombatants?: OverlayHandlerFuncs['getCombatants'];
+  cactbotReloadOverlays?: OverlayHandlerFuncs['cactbotReloadOverlays'];
+  cactbotLoadUser?: OverlayHandlerFuncs['cactbotLoadUser'];
+  cactbotRequestPlayerUpdate?: OverlayHandlerFuncs['cactbotRequestPlayerUpdate'];
+  cactbotRequestState?: OverlayHandlerFuncs['cactbotRequestState'];
+  cactbotSay?: OverlayHandlerFuncs['cactbotSay'];
+  cactbotSaveData?: OverlayHandlerFuncs['cactbotSaveData'];
+  cactbotLoadData?: OverlayHandlerFuncs['cactbotLoadData'];
+  cactbotChooseDirectory?: OverlayHandlerFuncs['cactbotChooseDirectory'];
+}
+const callOverlayHandlerOverrideMap: OverrideMap = {};
 
 export const callOverlayHandler: IOverlayHandler = (
     _msg: { [s: string]: unknown },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
   init();
-  if (_msg.call === 'getCombatants' && getCombatantsOverride)
-    return getCombatantsOverride(_msg as Parameters<OverlayHandlerFuncs['getCombatants']>[0]);
-  return callOverlayHandlerInternal(_msg as Parameters<IOverlayHandler>[0]);
+  // If this `as` is incorrect, then `override` will be undefined.
+  // TODO: we could also replace this with a type guard.
+  const type = _msg.call as keyof OverrideMap;
+  const override = callOverlayHandlerOverrideMap[type];
+  if (!override)
+    return callOverlayHandlerInternal(_msg as Parameters<IOverlayHandler>[0]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return override(_msg as any);
 };
 
-export const setGetCombatantsOverride = (override?: OverlayHandlerFuncs['getCombatants']): void => {
-  getCombatantsOverride = override;
+export const setOverlayHandlerOverride = <T extends keyof OverlayHandlerFuncs>(
+  type: T, override?: OverlayHandlerFuncs[T]): void => {
+  if (!override) {
+    delete callOverlayHandlerOverrideMap[type];
+    return;
+  }
+  callOverlayHandlerOverrideMap[type] = override;
 };
 
 export const init = (): void => {
